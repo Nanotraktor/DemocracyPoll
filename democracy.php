@@ -120,7 +120,7 @@ function democracy_activate(){
 	
 	$collate = (!empty($wpdb->charset) && !empty($wpdb->collate)) ? 
 		"DEFAULT CHARSET=$wpdb->charset COLLATE $wpdb->collate" : 
-		"DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci";
+		"DEFAULT CHARSET=utf8 COLLATE utf8_unicode_ci";
 
 	if( ! $wpdb->get_var("SHOW TABLES LIKE '$wpdb->democracy_q'") ){
 		dbDelta("
@@ -282,8 +282,8 @@ function dem_last_version_up(){
 		$wpdb->query("ALTER TABLE $wpdb->democracy_log ADD `expire` bigint(20) UNSIGNED NOT NULL default 0 AFTER `userid`;");
 	
 	// 4.7.5
-	// конвертируем в кодировку utf8mb4
-	if( $wpdb->charset === 'utf8mb4' ){
+	// конвертируем в кодировку utf8
+	if( $wpdb->charset === 'utf8' ){
 		foreach( array( $wpdb->democracy_q, $wpdb->democracy_a, $wpdb->democracy_log ) as $table ){
 			$alter = false;
 			if( ! $results = $wpdb->get_results( "SHOW FULL COLUMNS FROM `$table`" ) )
@@ -294,14 +294,14 @@ function dem_last_version_up(){
 				
 				list( $charset ) = explode( '_', $column->Collation );
 
-				if( strtolower( $charset ) != 'utf8mb4' ){
+				if( strtolower( $charset ) != 'utf8' ){
 					$alter = true;
 					break;
 				}
 			}
 			
 			if( $alter )
-				$wpdb->query("ALTER TABLE $table CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
+				$wpdb->query("ALTER TABLE $table CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci");
 		}
 		
 	}
